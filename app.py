@@ -6,7 +6,8 @@ from googletrans import Translator
 
 st.title('Análisis de Sentimiento')
 
-image = Image.open('emoticones.jpg')
+# Imagen
+image = Image.open('EAFIT.png')
 st.image(image)
 
 st.subheader(
@@ -38,6 +39,7 @@ with st.expander('Analizar texto'):
 
     if text:
 
+        # Traducir de español a inglés
         translation = translator.translate(
             text,
             src="es",
@@ -46,14 +48,17 @@ with st.expander('Analizar texto'):
 
         trans_text = translation.text
 
+        # Analizar sentimiento
         blob = TextBlob(trans_text)
 
         polarity = round(blob.sentiment.polarity, 2)
         subjectivity = round(blob.sentiment.subjectivity, 2)
 
+        # Mostrar resultados
         st.write('Polarity: ', polarity)
         st.write('Subjectivity: ', subjectivity)
 
+        # Clasificación
         if polarity > 0:
             st.write('Es un sentimiento Positivo 😊')
 
