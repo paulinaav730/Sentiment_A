@@ -3,6 +3,7 @@ import pandas as pd
 import streamlit as st
 from PIL import Image
 from googletrans import Translator
+import asyncio
 
 st.title('Análisis de Sentimiento')
 
@@ -13,8 +14,6 @@ st.image(image)
 st.subheader(
     "Por favor escribe en el campo de texto la frase que deseas analizar"
 )
-
-translator = Translator()
 
 with st.sidebar:
     st.subheader("Polaridad y Subjetividad")
@@ -39,18 +38,22 @@ with st.expander('Analizar texto'):
 
     if text:
 
-        # Traducir de español a inglés
-        translation = translator.translate(
-            text,
-            src="es",
-            dest="en"
-        )
+        async def traducir(texto):
+            async with Translator() as translator:
+                resultado = await translator.translate(
+                    texto,
+                    src="es",
+                    dest="en"
+                )
+                return resultado.text
 
-        trans_text = translation.text
+        # Traducir el texto
+        trans_text = asyncio.run(traducir(text))
 
         # Analizar sentimiento
         blob = TextBlob(trans_text)
 
+        # Obtener resultados
         polarity = round(blob.sentiment.polarity, 2)
         subjectivity = round(blob.sentiment.subjectivity, 2)
 
@@ -58,7 +61,7 @@ with st.expander('Analizar texto'):
         st.write('Polarity: ', polarity)
         st.write('Subjectivity: ', subjectivity)
 
-        # Clasificación
+        # Clasificación del sentimiento
         if polarity > 0:
             st.write('Es un sentimiento Positivo 😊')
 
